@@ -15,6 +15,7 @@ import com.tootiyesolutions.tpmazembe.Injection
 import com.tootiyesolutions.tpmazembe.R
 import com.tootiyesolutions.tpmazembe.adapter.NewsAdapter
 import com.tootiyesolutions.tpmazembe.databinding.FragmentNewsBinding
+import com.tootiyesolutions.tpmazembe.ui.NewsLoadStateAdapter
 import com.tootiyesolutions.tpmazembe.ui.NewsViewModel
 import com.tootiyesolutions.tpmazembe.util.Constants.Companion.DEFAULT_QUERY
 import com.tootiyesolutions.tpmazembe.util.Constants.Companion.LAST_SEARCH_QUERY
@@ -49,15 +50,9 @@ class NewsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        // val root = inflater.inflate(R.layout.fragment_news, container, false)
-
-        // binding = FragmentNewsBinding.inflate(inflater, container, false)
         _binding = FragmentNewsBinding.inflate(inflater, container, false)
         val view = binding.root
-        // setContentView(view)
 
-        // get the view model
         viewModel = ViewModelProvider(this, Injection.provideViewModelFactory())
             .get(NewsViewModel::class.java)
 
@@ -79,7 +74,10 @@ class NewsFragment : Fragment() {
     }
 
     private fun initAdapter() {
-        binding.rvListNews.adapter = adapter
+        binding.rvListNews.adapter = adapter.withLoadStateHeaderAndFooter(
+            header = NewsLoadStateAdapter { adapter.retry() },
+            footer = NewsLoadStateAdapter { adapter.retry() }
+        )
     }
 
     private fun initSearch(query: String) {
